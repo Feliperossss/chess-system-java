@@ -22,6 +22,7 @@ public class ChessMatch {
 		Position  source = sourcePosition.toPosition(sourcePosition.getRow(), sourcePosition.getColumn());
 		Position target  = sourcePosition.toPosition(targetPosition.getRow(), targetPosition.getColumn());
 		validateSourcePosition(source);
+		validadeTargetPosition(source, target);
 		Piece capturedPiece = makeMove(source, target);
 		return (ChessPiece)capturedPiece;
 	}
@@ -29,6 +30,10 @@ public class ChessMatch {
 	public void validateSourcePosition(Position source) {
 		if(!board.thereIsAPiece(source))throw new ChessException("error: piece not found");
 		if(!board.piece(source).isThereAnyPossibleMove()) throw new ChessException("error: there is no possible moves for this piece");
+	}
+	
+	public void validadeTargetPosition(Position source, Position target) {
+		if(!board.piece(source).possibleMove(target)) throw new ChessException("error: piece can't move  to target position");
 	}
 
 	private Piece makeMove(Position source, Position target) {
