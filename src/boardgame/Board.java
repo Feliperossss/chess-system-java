@@ -58,6 +58,21 @@ public class Board {
 		 return piece(position) != null;
 	}
 
+	
+	public Piece removePiece(Position position) {
+		if(!positionExistis(position)) {
+			 throw new BoardException("error: position not found");
+		}
+		if(piece(position) == null) {
+			return null;
+		}
+		
+		Piece aux = piece(position);
+		pieces[position.getRow()][position.getColumn()] = null;
+		return aux;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "Board [rows=" + rows + ", columns=" + columns + ", pieces=" + Arrays.toString(pieces) + "]";

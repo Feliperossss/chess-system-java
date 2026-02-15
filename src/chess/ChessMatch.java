@@ -1,6 +1,8 @@
 package chess;
 
 import boardgame.Board;
+import boardgame.BoardException;
+import boardgame.Piece;
 import boardgame.Position;
 import chess.pieces.King;
 import chess.pieces.Rook;
@@ -13,7 +15,28 @@ public class ChessMatch {
 		board = new Board(8, 8);
 		initialSetup();
 	}
+	
+	
+	
+	public ChessPiece perfomeChessPiece(ChessPosition sourcePosition, ChessPosition targetPosition) {
+		Position  source = sourcePosition.toPosition(sourcePosition.getRow(), sourcePosition.getColumn());
+		Position target  = sourcePosition.toPosition(targetPosition.getRow(), targetPosition.getColumn());
+		validateSourcePosition(source);
+		Piece capturedPiece = makeMove(source, target);
+		return (ChessPiece)capturedPiece;
+	}
+	
+	public void validateSourcePosition(Position source) {
+		if(!board.thereIsAPiece(source))throw new ChessException("error: piece not found");
+	}
 
+	private Piece makeMove(Position source, Position target) {
+		Piece p = board.removePiece(source);
+		Piece capturedPiece = board.removePiece(target);
+		board.placePiece(p, target);
+		return capturedPiece;
+	}
+	
 	public ChessPiece[][] getPieces() {
 		ChessPiece[][] mat = new ChessPiece[board.getRows()][board.getColumns()];
 		for (int i = 0; i < board.getRows(); i++) {
