@@ -6,6 +6,13 @@ public abstract class Piece {
 	private Board board;
 	
 	
+	
+	
+	
+	public Position getPosition() {
+		return position;
+	}
+
 	public Piece( Board board) {
 		this.board = board;
 		

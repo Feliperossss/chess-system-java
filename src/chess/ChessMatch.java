@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import boardgame.Board;
 import boardgame.Piece;
@@ -10,10 +11,12 @@ import chess.pieces.King;
 import chess.pieces.Rook;
 
 public class ChessMatch {
-	List<ChessPiece> piecesOnTheBoard = new ArrayList<>();
+	List<Piece> piecesOnTheBoard = new ArrayList<>();
+	List<Piece> capturedPieces = new ArrayList<>();
 	private int turn;
 	private Color currentPlayer;
 	private Board board;
+	private boolean check;
 
 	public ChessMatch() {
 		board = new Board(8, 8);
@@ -36,15 +39,30 @@ public class ChessMatch {
 		return currentPlayer;
 	}
 
+	
+
+
+
+	public boolean isCheck() {
+		return check;
+	}
+
 
 
 
 	public ChessPiece perfomeChessPiece(ChessPosition sourcePosition, ChessPosition targetPosition) {
 		Position  source = sourcePosition.toPosition(sourcePosition.getRow(), sourcePosition.getColumn());
-		Position target  = sourcePosition.toPosition(targetPosition.getRow(), targetPosition.getColumn());
+		Position target  = targetPosition.toPosition(targetPosition.getRow(), targetPosition.getColumn());
 		validateSourcePosition(source);
 		validadeTargetPosition(source, target);
 		Piece capturedPiece = makeMove(source, target);
+		if(testCheck(currentPlayer)) {
+			undoMove(source, target, capturedPiece	);
+			throw new ChessException("you cant put yourself in check");
+		}
+		
+		check = (testCheck(opponent(currentPlayer))) ? true: false;
+		
 		nextTurn();
 		return (ChessPiece)capturedPiece;
 	}
@@ -57,9 +75,9 @@ public class ChessMatch {
 	}
 	
 	public void validateSourcePosition(Position source) {
-		if(currentPlayer != ((ChessPiece)board.piece(source)).getColor()) throw new ChessException("You can't choose your opponent's pieces");
 		if(!board.thereIsAPiece(source))throw new ChessException("error: piece not found");
 		if(!board.piece(source).isThereAnyPossibleMove()) throw new ChessException("error: there is no possible moves for this piece");
+		if(currentPlayer != ((ChessPiece)board.piece(source)).getColor()) throw new ChessException("You can't choose your opponent's pieces");
 	}
 	
 	public void validadeTargetPosition(Position source, Position target) {
@@ -69,8 +87,24 @@ public class ChessMatch {
 	private Piece makeMove(Position source, Position target) {
 		Piece p = board.removePiece(source);
 		Piece capturedPiece = board.removePiece(target);
+		if(capturedPiece != null) {
+			piecesOnTheBoard.remove(capturedPiece);
+			capturedPieces.add((capturedPiece));
+		}
 		board.placePiece(p, target);
 		return capturedPiece;
+	}
+	
+	private void undoMove(Position source, Position target, Piece capturedPiece) {
+		Piece p = board.removePiece(target);
+		board.placePiece(p, source);
+		
+		if(capturedPiece != null ) {
+			board.placePiece(capturedPiece, target);
+			capturedPieces.remove(capturedPiece);
+			piecesOnTheBoard.add(capturedPiece);
+		}
+		
 	}
 	
 	public ChessPiece[][] getPieces() {
@@ -91,6 +125,34 @@ public class ChessMatch {
 
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		board.placePiece(piece, new ChessPosition(row, column).toPosition(row, column));
+		piecesOnTheBoard.add(piece);
+	}
+	
+	private Color opponent(Color color) {
+		return(color == Color.WHITE) ? Color.BLACK: Color.WHITE;
+	
+	}
+	
+	private ChessPiece king( Color color) {
+		List<Piece> list  = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor()  == color).collect(Collectors.toList());
+		for(Piece p: list) {
+			if(p  instanceof King) {
+				return(ChessPiece)p;
+			}
+		}
+		throw new IllegalStateException("no King found on the Board");
+	}
+	
+	private boolean testCheck(Color color) {
+		Position kingPosition  = king(color).getPosition();
+		List<Piece> opponentPieces =  piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor()  == opponent(color)).collect(Collectors.toList());
+		for(Piece p: opponentPieces) {
+			boolean[][] mat = p.possibleMoves();
+			if(mat[kingPosition.getRow()][kingPosition.getColumn()]) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void initialSetup() {

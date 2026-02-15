@@ -79,6 +79,9 @@ public class UI {
 		System.out.println("turn: "+ match.getTurn());
 		System.out.println("wating player: " +  match.getCurrentPlayer());
 		printCapturedPiecer(captured);
+		if(match.isCheck()) {
+			System.out.println("CHECK!");
+		}
 	}
 
 	private static void printPiece(ChessPiece piece, boolean background) {
