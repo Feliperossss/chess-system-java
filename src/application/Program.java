@@ -13,7 +13,7 @@ public class Program {
 		Scanner sc = new Scanner(System.in);
 		while(true) {
 			
-			
+			UI.clearScreen();
 			UI.printBoard(match.getPieces());
 			System.out.println();
 			System.out.print("source: ");
