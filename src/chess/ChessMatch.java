@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import boardgame.Board;
 import boardgame.Piece;
 import boardgame.Position;
@@ -7,7 +10,7 @@ import chess.pieces.King;
 import chess.pieces.Rook;
 
 public class ChessMatch {
-	
+	List<ChessPiece> piecesOnTheBoard = new ArrayList<>();
 	private int turn;
 	private Color currentPlayer;
 	private Board board;
