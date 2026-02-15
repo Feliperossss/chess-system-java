@@ -28,6 +28,7 @@ public class ChessMatch {
 	
 	public void validateSourcePosition(Position source) {
 		if(!board.thereIsAPiece(source))throw new ChessException("error: piece not found");
+		if(!board.piece(source).isThereAnyPossibleMove()) throw new ChessException("error: there is no possible moves for this piece");
 	}
 
 	private Piece makeMove(Position source, Position target) {
