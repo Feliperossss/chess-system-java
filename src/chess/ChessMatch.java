@@ -18,6 +18,7 @@ public class ChessMatch {
 	
 	
 	
+	
 	public ChessPiece perfomeChessPiece(ChessPosition sourcePosition, ChessPosition targetPosition) {
 		Position  source = sourcePosition.toPosition(sourcePosition.getRow(), sourcePosition.getColumn());
 		Position target  = sourcePosition.toPosition(targetPosition.getRow(), targetPosition.getColumn());
@@ -25,6 +26,13 @@ public class ChessMatch {
 		validadeTargetPosition(source, target);
 		Piece capturedPiece = makeMove(source, target);
 		return (ChessPiece)capturedPiece;
+	}
+	
+	
+	public boolean[][] possibleMoves(ChessPosition sourcePosition ){
+		Position position = sourcePosition.toPosition(sourcePosition.getRow(), sourcePosition.getColumn());
+		validateSourcePosition(position);
+		return board.piece(position).possibleMoves();
 	}
 	
 	public void validateSourcePosition(Position source) {
