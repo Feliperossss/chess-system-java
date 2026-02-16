@@ -21,6 +21,8 @@ public class ChessPosition {
 		return column;
 	}
 	
+	
+	
 	public Position toPosition(int row, char column) {
 		int rowPosition = 8- row;
 		int columnPosition = column - 'a';
